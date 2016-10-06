@@ -1,0 +1,22 @@
+##################################
+# php-fpm-cli
+# https://gist.github.com/muhqu/91497df3a110f594b992
+#################################
+---
+
+
+- name: Install libfcgi0ldbl
+  apt: pkg={{ item }} state=latest update_cache=yes
+  with_items:
+    - libfcgi0ldbl
+  register: requirements_installed
+
+- name: Install php-fpm-cli.sh
+  when: requirements_installed | success
+  template: >
+    src="php-fpm-cli.sh.j2" dest="{{ opcache_clean_cli_path }}"
+    owner=root
+    group=root
+    mode="755"
+
+#- debug: msg="For more info -> https://gist.github.com/muhqu/91497df3a110f594b99"

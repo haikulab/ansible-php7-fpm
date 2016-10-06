@@ -1,0 +1,51 @@
+---
+# default variables
+
+# please overwrite in your playbook.yml
+php_ppa: ondrej/php
+php_version: 7.0
+php_timezone: Pacific/Auckland
+
+php7_default_packages:
+  - php{{ php_version }}
+  - php{{ php_version }}-cli
+  - php{{ php_version }}-curl
+  - php{{ php_version }}-fpm
+  - php{{ php_version }}-gd
+  - php{{ php_version }}-iconv
+  - php{{ php_version }}-imagick
+  - php{{ php_version }}-mcrypt
+  - php{{ php_version }}-mcrypt
+  - php{{ php_version }}-memcached
+  - php{{ php_version }}-mysql
+  - php{{ php_version }}-json
+  - php{{ php_version }}-soap
+  - php{{ php_version }}-opcache
+  - php{{ php_version }}-xmlrpc
+  - php{{ php_version }}-xsl
+  - php{{ php_version }}-zip
+
+## Install bash script which allows to clear opcache
+## via cli without restarting php-fpm
+install_opcache_clean_script: true
+opcache_clean_cli_path: /usr/local/bin/php-fpm-cli.sh
+
+# PHP pool
+php_app_name: "test www"
+php_app_name_clean: "{{ php_app_name | regex_replace(' ', '-') }}"
+php_pm_type: dynamic
+# dynamic - the number of child processes are set dynamically based on the
+# following directives. With this process management, there will be
+# always at least 1 children.
+php_user: www-data
+php_group: www-data
+php_listen: /run/php/php7.0-fpm.sock
+
+php_start_servers: 7
+php_min_spare_servers: 5
+php_max_requests: 1000
+php_status_path: /php_status
+
+php_request_terminate_timeout: 0
+php_request_slowlog_timeout: 0
+php_slowlog: /var/log/nginx/php-slow.log

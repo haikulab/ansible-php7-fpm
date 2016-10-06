@@ -1,0 +1,46 @@
+---
+
+- name: init | Add PPA Repository for PHP
+  apt_repository: repo=ppa:{{ php_ppa }}
+
+- name: Update apt cache
+  apt: update_cache=yes
+  register: apt_updated
+
+- name: Install php-fpm and friends
+  when: apt_updated | success
+  apt: pkg={{ item }} state=latest
+  with_items: "{{ php7_default_packages }}"
+  register: php_installed
+
+- name: Quick security check in php.ini
+  when: php_installed | success
+  lineinfile: |
+    dest=/etc/php/{{ php_version }}/fpm/php.ini
+    state=present
+    regexp='^(|;){{ item.key }}'
+    line='{{ item.key }} = {{ item.value }}'
+  with_items:
+    - { key: 'cgi.fix_pathinfo',       value: '0'}
+    - { key: 'expose_php',             value: 'Off'}
+    - { key: 'date.timezone',          value: '{{ php_timezone }}'}
+  notify: restart php{{ php_version }}-fpm
+
+- name: Load php pool configuration
+  template: |
+    src=www.conf.j2
+    dest=/etc/php/{{ php_version }}/fpm/pool.d/{{ php_app_name_clean }}.conf
+  notify: restart php{{ php_version }}-fpm
+
+- name: Place Opcache settings configuration (from template)
+  when: php_installed | success
+  template: |
+    src=php-opcache.ini.j2
+    dest=/etc/php/{{ php_version }}/mods-available/opcache.ini
+  notify: restart php{{ php_version }}-fpm
+
+## install php-fpm-cli script
+## https://gist.github.com/muhqu/91497df3a110f594b992
+- name: Include php-fpm-cli script
+  when: install_opcache_clean_script == true
+  include: install-opcache-clean-script.yml

@@ -1,0 +1,28 @@
+[{{ php_app_name_clean | default('www') }}]
+
+listen = {{ php_listen|default('/var/run/php5-fpm.sock') }}
+listen.owner = {{ php_user }}
+listen.group = {{ php_group }}
+
+user = {{ php_user }}
+group = {{ php_group }}
+
+pm = {{ php_pm_type }}
+{#
+    {{ (ansible_memtotal_mb - 200) // 50 }}
+    the // is no accident, it returns truncated integer
+    http://jinja.pocoo.org/docs/dev/templates/#math
+#}
+pm.max_children = {{ (ansible_memtotal_mb - 200) // 50 }}
+pm.start_servers = {{ php_start_servers }}
+pm.min_spare_servers = {{ php_min_spare_servers }}
+pm.max_spare_servers = {{ (ansible_memtotal_mb - 200) // 50 }}
+pm.max_requests = {{ php_max_requests }}
+pm.status_path = {{ php_status_path }}
+
+request_terminate_timeout = {{ php_request_terminate_timeout }}
+request_slowlog_timeout = {{ php_request_slowlog_timeout }}
+slowlog = {{ php_slowlog }}
+
+; This is the default from php repo itself
+; catch_workers_output = yes
