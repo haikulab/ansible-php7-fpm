@@ -1,6 +1,6 @@
 [{{ php_app_name_clean | default('www') }}]
 
-listen = {{ php_listen|default('/var/run/php5-fpm.sock') }}
+listen = {{ php_listen_path }}/php{{ php_version }}-{{ php_app_name_clean }}.sock
 listen.owner = {{ php_user }}
 listen.group = {{ php_group }}
 
@@ -13,10 +13,14 @@ pm = {{ php_pm_type }}
     the // is no accident, it returns truncated integer
     http://jinja.pocoo.org/docs/dev/templates/#math
 #}
-pm.max_children = {{ (ansible_memtotal_mb - 200) // 50 }}
+
+; System RAM => {{ ansible_memtotal_mb }}
+{% set __php_memory_to_use = ((ansible_memtotal_mb - 200) // 50) %}
+
+pm.max_children = {{ __php_memory_to_use }}
 pm.start_servers = {{ php_start_servers }}
 pm.min_spare_servers = {{ php_min_spare_servers }}
-pm.max_spare_servers = {{ (ansible_memtotal_mb - 200) // 50 }}
+pm.max_spare_servers = {{ __php_memory_to_use }}
 pm.max_requests = {{ php_max_requests }}
 pm.status_path = {{ php_status_path }}
 

@@ -1,9 +1,13 @@
 ---
 
 - name: init | Add PPA Repository for PHP
-  apt_repository: repo=ppa:{{ php_ppa }}
+  apt_repository: |
+    repo=ppa:{{ php_ppa }}
+    update_cache=yes
+  register: ppa_added
 
 - name: Update apt cache
+  when: ppa_added | success
   apt: update_cache=yes
   register: apt_updated
 
@@ -20,24 +24,28 @@
     state=present
     regexp='^(|;){{ item.key }}'
     line='{{ item.key }} = {{ item.value }}'
-  with_items:
-    - { key: 'cgi.fix_pathinfo',       value: '0'}
-    - { key: 'expose_php',             value: 'Off'}
-    - { key: 'date.timezone',          value: '{{ php_timezone }}'}
-  notify: restart php{{ php_version }}-fpm
+  with_items: "{{ php_ini_settings }}"
+  notify: restart php-fpm
 
 - name: Load php pool configuration
   template: |
     src=www.conf.j2
     dest=/etc/php/{{ php_version }}/fpm/pool.d/{{ php_app_name_clean }}.conf
-  notify: restart php{{ php_version }}-fpm
+  notify: restart php-fpm
 
 - name: Place Opcache settings configuration (from template)
   when: php_installed | success
   template: |
     src=php-opcache.ini.j2
     dest=/etc/php/{{ php_version }}/mods-available/opcache.ini
-  notify: restart php{{ php_version }}-fpm
+  register: opcache_config_placed
+
+- name: Enable opcache module for php
+  when: opcache_config_placed | success
+  become: yes
+  command: phpenmod opcache
+  changed_when: false
+  notify: restart php-fpm
 
 ## install php-fpm-cli script
 ## https://gist.github.com/muhqu/91497df3a110f594b992

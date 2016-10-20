@@ -1,22 +1,24 @@
-[opcache]
+; configuration for php opcache module
+; priority=10
+zend_extension=opcache.so
 
 ; OPcache On/Off switch. When set to Off, code is not optimized.
 ; (default "1")
-opcache.enable = 1
+opcache.enable = {{ opcache_enable | default('1') }}
 
 ; Enables the OPcache for the CLI version of PHP.
 ; It's mostly for testing and debugging.
 ; (default "0")
-opcache.enable_cli = 0
+opcache.enable_cli = {{ opcache_enable_cli | default('0') }}
 
 ; The OPcache shared memory storage size.
 ; The amount of memory for storing precompiled PHP code in Mbytes.
 ; (default "64")
-opcache.memory_consumption = 128
+opcache.memory_consumption = {{ opcache_memory_consumption | default('128') }}
 
 ; The amount of memory for interned strings in Mbytes.
 ; (default "4")
-opcache.interned_strings_buffer = 8
+opcache.interned_strings_buffer = {{ opcache_interned_strings_buffer | default('8') }}
 
 ; The maximum number of keys (scripts) in the OPcache hash table.
 ; The number is actually the first one in the following set of prime numbers
@@ -24,37 +26,37 @@ opcache.interned_strings_buffer = 8
 ; 16229, 32531, 65407, 130987, 262237, 524521, 1048793 }. Only numbers between
 ; 200 and 1000000 are allowed.
 ; (default "2000")
-opcache.max_accelerated_files = 7963
+opcache.max_accelerated_files = {{ opcache_max_accelerated_files | default('7963') }}
 
 ; The maximum percentage of "wasted" memory until a restart is scheduled.
 ; (default "5")
-opcache.max_wasted_percentage = 5
+opcache.max_wasted_percentage = {{ opcache_max_wasted_percentage | default('5') }}
 
 ; When this directive is enabled, the OPcache appends the current working
 ; directory to the script key, thus eliminating possible collisions between
 ; files with the same name (basename). Disabling the directive improves
 ; performance, but may break existing applications.
 ; (default "1")
-opcache.use_cwd = 1
+opcache.use_cwd = {{ opcache_use_cwd | default('1') }}
 
 ; When disabled, you must reset the OPcache manually or restart the webserver
 ; for changes to the filesystem to take effect. The frequency of the check is
 ; controlled by the directive "opcache.revalidate_freq".
 ; (default "1")
-opcache.validate_timestamps = 1
+opcache.validate_timestamps = {{ opcache_validate_timestamps | default('1') }}
 
 ; How often (in seconds) to check file timestamps for changes to the shared
 ; memory storage allocation. ("1" means validate once per second, but only once
 ; per request. "0" means always validate)
 ; (default "2")
-opcache.revalidate_freq = 60
+opcache.revalidate_freq = {{ opcache_revalidate_freq | default('60') }}
 
 ; Prevents caching files that are less than this number of seconds old.
 ; It protects from caching of incompletely updated files. In case all file
 ; updates on your site are atomic, you may increase performance setting it
 ; to "0".
 ; (default "2")
-opcache.file_update_protection = 2
+opcache.file_update_protection = {{ opcache_file_update_protection | default('2') }}
 
 ; Enables or disables file search in include_path optimization.
 ; If the file search is disabled and a cached file is found that uses the same
@@ -64,33 +66,33 @@ opcache.file_update_protection = 2
 ; default for this directive is disabled, which means that optimization is
 ; active.
 ; (default "0")
-opcache.revalidate_path = 0
+opcache.revalidate_path = {{ opcache_revalidate_path | default('0') }}
 
 ; If disabled, all PHPDoc comments are dropped from the code to reduce the size
 ; of the optimized code. Disabling "Doc Comments" may break some existing
 ; applications and frameworks (e.g. Doctrine, ZF2, PHPUnit)
 ; (default "1")
-opcache.save_comments = 1
+opcache.save_comments = {{ opcache_save_comments | default('1') }}
 
 ; If disabled, PHPDoc comments are not loaded from SHM, so "Doc Comments" may
 ; be always stored (save_comments=1), but not loaded by applications that don't
 ; need them anyway.
 ; (default "1")
-opcache.load_comments = 1
+opcache.load_comments = {{ opcache_load_comments | default('1') }}
 
 ; If enabled, a fast shutdown sequence is used for the accelerated code. The
 ; fast shutdown sequence doesn't free each allocated block, but lets the Zend
 ; Engine Memory Manager do the work.
 ; (default "0")
-opcache.fast_shutdown = 1
+opcache.fast_shutdown = {{ opcache_fast_shutdown | default('1') }}
 
 ; Allow file existence override (file_exists, etc.) performance feature.
 ; (default "0")
-opcache.enable_file_override = 0
+opcache.enable_file_override = {{ opcache_enable_file_override | default('0') }}
 
 ; A bitmask, where each bit enables or disables the appropriate OPcache passes
 ; (default "0xffffffff")
-opcache.optimization_level = 0xffffffff
+opcache.optimization_level = {{ opcache_optimization_level | default('0xffffffff') }}
 
 ; Enable this hack as a workaround for "can't redeclare class" errors.
 ; The OPcache stores the places where DECLARE_CLASS opcodes use inheritance
@@ -104,7 +106,7 @@ opcache.optimization_level = 0xffffffff
 ; php-5.3 and above this hack is not needed anymore and this setting has no
 ; effect.
 ; (default "1")
-opcache.inherited_hack = 1
+opcache.inherited_hack = {{ opcache_inherited_hack | default('1') }}
 
 ; The location of the OPcache blacklist file (wildcards allowed).
 ; Each OPcache blacklist file is a text file that holds the names of files that
@@ -118,19 +120,19 @@ opcache.inherited_hack = 1
 ; time evaluation.
 ; 3) Code that triggers an OPcache bug.
 ; (default "")
-opcache.blacklist_filename = ""
+opcache.blacklist_filename = {{ opcache_blacklist_filename | default('') }}
 
 ; Allows exclusion of large files from being cached. By default all files are
 ; cached.
 ; (default "0")
-opcache.max_file_size = 0
+opcache.max_file_size = {{ opcache_max_file_size | default('0') }}
 
 ; Check the cache checksum each N requests.
 ; The default value of "0" means that the checks are disabled. Because
 ; calculating the checksum impairs performance, this directive should be
 ; enabled only as part of a debugging process.
 ; (default "0")
-opcache.consistency_checks = 0
+opcache.consistency_checks = {{ opcache_consistency_checks | default('0') }}
 
 ; How long to wait (in seconds) for a scheduled restart to begin if the cache
 ; is not being accessed. The OPcache uses this directive to identify a
@@ -140,31 +142,33 @@ opcache.consistency_checks = 0
 ; restart. If the log level is 3 or above, a "killed locker" error is recorded
 ; in the Apache logs when this happens.
 ; (default "180")
-opcache.force_restart_timeout = 180
+opcache.force_restart_timeout = {{ opcache_force_restart_timeout | default('180') }}
 
 ; OPcache error_log file name. Empty string assumes "stderr".
 ; (default "" which means stderr)
-opcache.error_log = ""
+opcache.error_log = {{ opcache_error_log | default('') }}
 
 ; All OPcache errors go to the Web server log.
 ; By default, only fatal errors (level 0) or errors (level 1) are logged. You
 ; can also enable warnings (level 2), info messages (level 3) or debug messages
 ; (level 4).
 ; (default "1")
-opcache.log_verbosity_level = 1
+opcache.log_verbosity_level = {{ opcache_log_verbosity_level | default('') }}
 
 ; Preferred Shared Memory back-end. Leave empty and let the system decide.
 ; (default "")
-opcache.preferred_memory_model = ""
+opcache.preferred_memory_model = {{ opcache_preferred_memory_model | default('') }}
 
 ; Protect the shared memory from unexpected writing during script execution.
 ; Useful for internal debugging only.
 ; (default "0")
-opcache.protect_memory = 0
+opcache.protect_memory = {{ opcache_protect_memory | default('') }}
 
 ; Mapping base of shared memory segments (for Windows only). All the PHP
 ; processes have to map shared memory into the same address space. This
 ; directive allows to manually fix the "Unable to reattach to base address"
 ; errors.
 ;opcache.mmap_base = ""
+opcache.mmap_base = {{ opcache_mmap_base | default('') }}
+
 

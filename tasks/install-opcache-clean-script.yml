@@ -4,7 +4,6 @@
 #################################
 ---
 
-
 - name: Install libfcgi0ldbl
   apt: pkg={{ item }} state=latest update_cache=yes
   with_items:
