@@ -1,6 +1,11 @@
 [{{ php_app_name_clean | default('www') }}]
 
+{% if php_listen_on_network == true %}
+listen = {{ php_listen_network_ip }}:{{ php_listen_network_port }}
+{% else %}
 listen = {{ php_listen_path }}/php{{ php_version }}-{{ php_app_name_clean }}.sock
+{% endif %}
+
 listen.owner = {{ php_user }}
 listen.group = {{ php_group }}
 

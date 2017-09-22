@@ -3,7 +3,7 @@
 
 # please overwrite in your playbook.yml
 php_ppa: ondrej/php
-php_version: 7.0
+php_version: 7.1
 php_timezone: Pacific/Auckland
 
 php7_default_packages:
@@ -15,9 +15,9 @@ php7_default_packages:
   - php{{ php_version }}-curl
   - php{{ php_version }}-gd
   - php{{ php_version }}-iconv
+  - php{{ php_version }}-intl
   - php{{ php_version }}-imagick
   - php{{ php_version }}-mcrypt
-  - php-memcached
   - php{{ php_version }}-mbstring
   - php{{ php_version }}-mysql
   - php{{ php_version }}-json
@@ -27,6 +27,7 @@ php7_default_packages:
   - php{{ php_version }}-xml
   - php{{ php_version }}-xsl
   - php{{ php_version }}-zip
+  - php-memcached
 
 # use this list to change php.ini values
 php_ini_settings:
@@ -39,7 +40,7 @@ install_opcache_clean_script: true
 opcache_clean_cli_path: /usr/local/bin/php-fpm-cli.sh
 
 # PHP pool
-php_app_name: "test www"
+php_app_name: "test-www"
 php_app_name_clean: "{{ php_app_name | regex_replace(' ', '-') }}"
 php_pm_type: dynamic
 # dynamic - the number of child processes are set dynamically based on the
@@ -47,7 +48,20 @@ php_pm_type: dynamic
 # always at least 1 children.
 php_user: www-data
 php_group: www-data
+
+# Defaults to listening on unix socket
+php_listen_on_network: false
+
+# Unix socket listener
 php_listen_path: /run/php
+## listen directive will be generated based on the path defined
+## eg listen = /run/php/php-7.0-appName.sock
+
+# Network listener
+## Listen directive will be generated based on network details defined
+## eg listen = 127.0.0.1:9000
+php_listen_network_ip: 127.0.0.1
+php_listen_network_port: 9000
 
 php_start_servers: 7
 php_min_spare_servers: 5
