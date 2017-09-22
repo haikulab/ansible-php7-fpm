@@ -5,10 +5,6 @@ Ansible role for installing php-fpm on the your Debian/Ubuntu system.
 
 ## php7.1 by default
 
-## OPcache disabled
-
-Feel free to configure opcache to really speed up your php apps `/etc/php5/fpm/conf.d/05-opcache.ini`.
-
 ## Overwrite Default Variables
 
 The `vars/main.yml` file should contain your list of packages you want to install in order to override defaults found in `defaults/main.yml`.
